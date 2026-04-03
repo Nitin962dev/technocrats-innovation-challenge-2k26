@@ -1,114 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HerShield - AI Women Safety</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/
-</head>
-<body>
-    <div id="loading-screen" class="loading-screen">
-        <div class="logo">
-            <i class="fas fa-shield-alt"></i>
-            <h2>HerShield</h2>
-        </div>
-        <div class="spinner"></div>
-    </div>
-
-     <div id="home-screen" class="screen active">
-        <header>
-            <div class="status-bar">
-                <span class="time" id="time"></span>
-                <div class="battery">
-                    <span id="battery-level">85%</span>
-                    <i class="fas fa-battery-full"></i>
-                </div>
-            </div>
-            <div class="header-content">
-                <h1><i class="fas fa-shield-alt"></i> HerShield</h1>
-                <p>Stay Safe Always</p>
-            </div>
-        </header>
-
-        <main>
-
-            <div class="sos-container">
-                <button id="sos-btn" class="sos-btn">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>🚨 SOS</span>
-                </button>
-            </div>
-
-            <div class="actions-grid">
-                <button class="action-btn" data-screen="timer">
-                    <i class="fas fa-clock"></i>
-                    <span>Safety Timer</span>
-                </button>
-                <button class="action-btn" data-screen="risk">
-                    <i class="fas fa-brain"></i>
-                    <span>AI Risk Check</span>
-                </button>
-                <button class="action-btn" data-screen="nearby">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Nearby Help</span>
-                </button>
-                <button class="action-btn fake-call">
-                    <i class="fas fa-phone"></i>
-                    <span>Fake Call</span>
-                </button>
-            </div>
-        </main>
-    </div>
-
-     <div id="timer-screen" class="screen">
-        <div class="back-btn" onclick="showScreen('home')">
-            <i class="fas fa-arrow-left"></i>
-        </div>
-        <div class="timer-container">
-            <h2>Safety Timer</h2>
-            <div class="timer-display" id="timer-display">20:00</div>
-            <div class="timer-status" id="timer-status">Check-in required in 20 minutes</div>
-            <button id="safe-btn" class="safe-btn">
-                <i class="fas fa-check"></i>
-                I'm Safe
-            </button>
-        </div>
-    </div>
-
-    <div id="alert-screen" class="screen">
-        <div class="alert-animation">
-            <div class="pulse-ring"></div>
-            <div class="pulse-ring"></div>
-            <div class="pulse-ring"></div>
-            <i class="fas fa-exclamation-triangle alert-icon"></i>
-        </div>
-        <div class="alert-content">
-            <h2 id="alert-status">🚨 EMERGENCY TRIGGERED</h2>
-            <div id="alert-progress">
-                <div class="progress-item">
-                    <span>📍 Location Shared</span>
-                    <div class="progress-bar active"></div>
-                </div>
-                <div class="progress-item">
-                    <span>📱 Alert to Contacts</span>
-                    <div class="progress-bar"></div>
-                </div>
-                <div class="progress-item">
-                    <span>🎥 Recording Evidence</span>
-                    <div class="progress-bar"></div>
-                </div>
-            </div>
-            <div class="location-info" id="location-info" style="display:none;">
-                <p><strong>Location:</strong> 19.0760° N, 72.8777° E</p>
-                <p><strong>Address:</strong> Dadar, Mumbai</p>
-            </div>
-            <button class="call-police-btn" onclick="callEmergency()">
-                <i class="fas fa-phone"></i> Call Police (100)
-            </button>
-        </div>
-    </div>
-
-
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HerShield - Advanced Women Safety Web App</title>
+    <meta name="description" content="HerShield: Cutting-Edge Technologies for Real-Time Women Safety including Fake Call, SOS, Safe Route, and Auto Evidence Recording." />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
