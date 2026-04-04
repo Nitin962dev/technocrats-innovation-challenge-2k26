@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic, ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react';
+import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic, ArrowLeft, ChevronDown, ChevronRight, AlertOctagon, Phone, Shield } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Dashboard() {
@@ -17,6 +17,10 @@ export default function Dashboard() {
     setSosActive(!sosActive);
   };
 
+  const handleCancelSOS = () => {
+    setSosActive(false);
+  };
+
   // Voice Interaction Hook
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -25,10 +29,11 @@ export default function Dashboard() {
       return;
     }
 
+    let isComponentMounted = true;
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = 'en-US';
+    recognition.lang = 'en-IN'; // Better support for both 'help' and 'bachao'
 
     recognition.onstart = () => setIsListening(true);
     
@@ -39,22 +44,29 @@ export default function Dashboard() {
       }
       
       const transcriptLower = currentTranscript.toLowerCase();
+      // Trigger SOS on keywords
       if (transcriptLower.includes('help help') || transcriptLower.includes('bachao bachao')) {
         setSosActive(true);
         if ("vibrate" in navigator) {
            navigator.vibrate([500, 200, 500, 200, 500]);
         }
+        // Force stop to clear transcript history; it auto-restarts via onend
+        recognition.stop();
       }
     };
 
     recognition.onend = () => {
        setIsListening(false);
-       // Auto-restart to maintain continuous listening
-       setTimeout(() => {
-         try {
-           recognition.start();
-         } catch (e) {}
-       }, 1000);
+       // Auto-restart to maintain continuous listening only if mounted
+       if (isComponentMounted) {
+         setTimeout(() => {
+           if (isComponentMounted) {
+             try {
+               recognition.start();
+             } catch (e) {}
+           }
+         }, 1000);
+       }
     };
 
     try {
@@ -64,6 +76,7 @@ export default function Dashboard() {
     }
 
     return () => {
+      isComponentMounted = false;
       recognition.onend = null; // Prevent restart on unmount
       recognition.stop();
     };
