@@ -1,17 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation } from 'lucide-react';
+import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Dashboard() {
   const [sosActive, setSosActive] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const navigate = useNavigate();
   const { t } = useLanguage();
 
   const handleSos = () => {
     setSosActive(!sosActive);
   };
+
+  // Voice Interaction Hook
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.warn("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => setIsListening(true);
+    
+    recognition.onresult = (event) => {
+      let currentTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        currentTranscript += event.results[i][0].transcript;
+      }
+      
+      const transcriptLower = currentTranscript.toLowerCase();
+      if (transcriptLower.includes('help help') || transcriptLower.includes('bachao bachao')) {
+        setSosActive(true);
+        if ("vibrate" in navigator) {
+           navigator.vibrate([500, 200, 500, 200, 500]);
+        }
+      }
+    };
+
+    recognition.onend = () => {
+       setIsListening(false);
+       // Auto-restart to maintain continuous listening
+       setTimeout(() => {
+         try {
+           recognition.start();
+         } catch (e) {}
+       }, 1000);
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      console.error(e);
+    }
+
+    return () => {
+      recognition.onend = null; // Prevent restart on unmount
+      recognition.stop();
+    };
+  }, []);
 
   const emergencyContacts = [
     { name: 'Women Helpline', number: '1091', icon: Contact },
@@ -41,38 +94,53 @@ export default function Dashboard() {
       </div>
 
       {/* SOS Button Area */}
-      <div className="relative w-64 h-64 flex items-center justify-center mt-4">
-        {sosActive && (
-          <>
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0.8 }}
-              animate={{ scale: 1.5, opacity: 0 }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
-              className="absolute inset-0 bg-red-500 rounded-full"
-            />
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0.8 }}
-              animate={{ scale: 1.8, opacity: 0 }}
-              transition={{ duration: 1.5, delay: 0.4, repeat: Infinity, ease: 'easeOut' }}
-              className="absolute inset-0 bg-red-400 rounded-full"
-            />
-          </>
-        )}
+      <div className="flex flex-col items-center mt-4">
+        <div className="relative w-64 h-64 flex items-center justify-center">
+          {sosActive && (
+            <>
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0.8 }}
+                animate={{ scale: 1.5, opacity: 0 }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+                className="absolute inset-0 bg-red-500 rounded-full"
+              />
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0.8 }}
+                animate={{ scale: 1.8, opacity: 0 }}
+                transition={{ duration: 1.5, delay: 0.4, repeat: Infinity, ease: 'easeOut' }}
+                className="absolute inset-0 bg-red-400 rounded-full"
+              />
+            </>
+          )}
+          
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSos}
+            className={`relative z-10 w-48 h-48 rounded-full shadow-2xl flex flex-col items-center justify-center text-white font-bold transition-all duration-300 ${
+              sosActive 
+                ? 'bg-gradient-to-br from-red-500 to-rose-700 shadow-red-500/50' 
+                : 'bg-gradient-to-br from-purple-600 to-fuchsia-600 shadow-purple-500/50'
+            }`}
+          >
+            <ShieldAlert size={48} className="mb-2" />
+            <span className="text-3xl tracking-widest">{sosActive ? t('sos_active') : t('sos_button')}</span>
+            <span className="text-xs font-normal opacity-80 mt-1 uppercase tracking-wider">{t('sos_press_prompt')}</span>
+          </motion.button>
+        </div>
         
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleSos}
-          className={`relative z-10 w-48 h-48 rounded-full shadow-2xl flex flex-col items-center justify-center text-white font-bold transition-all duration-300 ${
-            sosActive 
-              ? 'bg-gradient-to-br from-red-500 to-rose-700 shadow-red-500/50' 
-              : 'bg-gradient-to-br from-purple-600 to-fuchsia-600 shadow-purple-500/50'
-          }`}
+        {/* Voice Listening Status */}
+        <motion.div 
+           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+           className={`mt-6 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium border ${isListening ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-red-50 border-red-100 text-red-500'}`}
         >
-          <ShieldAlert size={48} className="mb-2" />
-          <span className="text-3xl tracking-widest">{sosActive ? t('sos_active') : t('sos_button')}</span>
-          <span className="text-xs font-normal opacity-80 mt-1 uppercase tracking-wider">{t('sos_press_prompt')}</span>
-        </motion.button>
+           <Mic size={14} className={isListening ? "text-purple-600 animate-pulse" : ""} />
+           {isListening ? (
+             <span>Say <strong>"Help Help"</strong> or <strong>"Bachao Bachao"</strong> to auto-trigger SOS</span>
+           ) : (
+             <span>Please allow Microphone access for Voice SOS</span>
+           )}
+        </motion.div>
       </div>
 
       {/* SOS Active Alerts & Animated Police Path */}
