@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Dashboard() {
   const [sosActive, setSosActive] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useLanguage();
+  
+  const isEmergencyOnly = location.state?.emergencyOnly || false;
 
   const handleSos = () => {
     setSosActive(!sosActive);
@@ -77,21 +80,29 @@ export default function Dashboard() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="p-6 flex flex-col gap-8 items-center"
+      className={`p-6 flex flex-col gap-8 items-center ${isEmergencyOnly ? 'min-h-screen bg-red-50/50' : ''}`}
     >
-      {/* Header Info */}
-      <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('current_location')}</p>
-          <div className="flex items-center gap-1.5 mt-1">
-            <MapPin size={16} className="text-purple-600" />
-            <h2 className="text-slate-800 font-semibold tracking-tight">Connaught Place, Delhi</h2>
+      {/* Header Info OR Back to Login */}
+      {isEmergencyOnly ? (
+        <div className="w-full mb-2 flex justify-start">
+           <button onClick={() => navigate('/login')} className="flex items-center gap-2 text-red-600 hover:bg-red-100 transition-colors font-bold uppercase tracking-wider text-sm bg-white px-4 py-2 border border-red-200 rounded-full shadow-sm active:scale-95">
+             <ArrowLeft size={18} /> Exit Emergency Mode
+           </button>
+        </div>
+      ) : (
+        <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('current_location')}</p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <MapPin size={16} className="text-purple-600" />
+              <h2 className="text-slate-800 font-semibold tracking-tight">Connaught Place, Delhi</h2>
+            </div>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold border-2 border-purple-200">
+            U
           </div>
         </div>
-        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold border-2 border-purple-200">
-          U
-        </div>
-      </div>
+      )}
 
       {/* SOS Button Area */}
       <div className="flex flex-col items-center mt-4">
@@ -228,7 +239,7 @@ export default function Dashboard() {
       )}
 
       {/* Live Tracking & Guardians Banner */}
-      {!sosActive && (
+      {!sosActive && !isEmergencyOnly && (
         <motion.div 
           onClick={() => navigate('/guardians')}
           whileHover={{ scale: 1.02 }}
@@ -254,7 +265,7 @@ export default function Dashboard() {
       )}
 
       {/* Govt Quick Access Data structure mock */}
-      {!sosActive && (
+      {!sosActive && !isEmergencyOnly && (
         <div className="w-full mt-4">
           <h3 className="text-slate-800 font-bold mb-4 flex items-center justify-between">
             <span>{t('national_emergency')}</span>
