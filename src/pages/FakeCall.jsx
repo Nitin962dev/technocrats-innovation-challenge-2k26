@@ -1,11 +1,22 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, PhoneOff, Settings2, Clock } from 'lucide-react';
+import { Phone, PhoneOff, Settings2, Clock, ArrowLeft } from 'lucide-react';
 
 export default function FakeCall() {
+  const navigate = useNavigate();
   const [callActive, setCallActive] = useState(false);
   const [callerName, setCallerName] = useState('Mom');
   const [timer, setTimer] = useState(0);
+
+  const [savedCallers, setSavedCallers] = useState(() => {
+    const saved = localStorage.getItem('hershield_fake_callers');
+    return saved ? JSON.parse(saved) : ['Mom', 'Dad', 'Police', 'Brother'];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('hershield_fake_callers', JSON.stringify(savedCallers));
+  }, [savedCallers]);
 
   const startFakeCall = (delay = 0) => {
     if (delay === 0) {
@@ -38,7 +49,7 @@ export default function FakeCall() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="h-full flex flex-col"
+      className="h-full flex flex-col pt-4"
     >
       <AnimatePresence>
         {callActive ? (
@@ -80,20 +91,52 @@ export default function FakeCall() {
             </div>
           </motion.div>
         ) : (
-          <div className="p-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-700 to-fuchsia-600 bg-clip-text text-transparent">Fake Call System</h2>
-              <p className="text-slate-500 text-sm mt-1">Discreetly simulate an incoming call to escape an uncomfortable situation.</p>
+          <div className="px-6 pb-6">
+            <div className="flex items-start gap-4 mb-6">
+              <button 
+                onClick={() => navigate(-1)} 
+                className="mt-1 w-10 h-10 shrink-0 bg-white shadow-sm border border-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-purple-600 transition-colors"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-700 to-fuchsia-600 bg-clip-text text-transparent">Fake Call System</h2>
+                <p className="text-slate-500 text-xs mt-1 leading-snug">Discreetly simulate an incoming call to escape an uncomfortable situation.</p>
+              </div>
             </div>
 
             <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-6">
               <label className="block text-sm font-bold text-slate-700 mb-2">Caller Name</label>
-              <input 
-                type="text" 
-                value={callerName}
-                onChange={(e) => setCallerName(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all font-semibold"
-              />
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={callerName}
+                  onChange={(e) => setCallerName(e.target.value)}
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all font-semibold"
+                />
+                <button 
+                  onClick={() => {
+                    if (callerName && !savedCallers.includes(callerName)) {
+                      setSavedCallers([...savedCallers, callerName]);
+                    }
+                  }}
+                  className="bg-purple-100 text-purple-600 px-4 py-3 rounded-xl font-bold hover:bg-purple-200 transition-colors"
+                >
+                  Add +
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mt-4">
+                 {savedCallers.map(name => (
+                    <button 
+                      key={name}
+                      onClick={() => setCallerName(name)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${callerName === name ? 'bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-500/30' : 'bg-slate-50 text-slate-500 border-slate-200 hover:border-purple-300'}`}
+                    >
+                      {name}
+                    </button>
+                 ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

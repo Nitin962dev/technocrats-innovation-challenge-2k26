@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic, ArrowLeft } from 'lucide-react';
+import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic, ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Dashboard() {
@@ -80,7 +80,7 @@ export default function Dashboard() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className={`p-6 flex flex-col gap-8 items-center ${isEmergencyOnly ? 'min-h-screen bg-red-50/50' : ''}`}
+      className={`p-4 flex flex-col gap-4 items-center ${isEmergencyOnly ? 'min-h-screen bg-red-50/50' : ''}`}
     >
       {/* Header Info OR Back to Login */}
       {isEmergencyOnly ? (
@@ -90,22 +90,29 @@ export default function Dashboard() {
            </button>
         </div>
       ) : (
-        <div className="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('current_location')}</p>
-            <div className="flex items-center gap-1.5 mt-1">
-              <MapPin size={16} className="text-purple-600" />
-              <h2 className="text-slate-800 font-semibold tracking-tight">Connaught Place, Delhi</h2>
-            </div>
+        <div className="w-full flex justify-between items-start -mt-2">
+          {/* Spacer to perfectly center the location block */}
+          <div className="w-10 h-10 invisible" />
+          
+          <div className="bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100 flex items-center gap-1.5 z-10">
+            <MapPin size={14} className="text-purple-600" />
+            <span className="text-slate-700 text-sm font-semibold tracking-tight">Connaught Place, Delhi</span>
           </div>
-          <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold border-2 border-purple-200">
-            U
-          </div>
+
+          <motion.button 
+             whileHover={{ x: 5 }}
+             animate={{ x: [0, 5, 0] }}
+             transition={{ repeat: Infinity, duration: 2 }}
+             onClick={() => navigate('/menu')}
+             className="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-500 hover:text-purple-600 border border-slate-100 z-10"
+           >
+             <ChevronRight size={20} />
+          </motion.button>
         </div>
       )}
 
       {/* SOS Button Area */}
-      <div className="flex flex-col items-center mt-4">
+      <div className="flex flex-col items-center -mt-2">
         <div className="relative w-64 h-64 flex items-center justify-center">
           {sosActive && (
             <>
@@ -143,7 +150,7 @@ export default function Dashboard() {
         {/* Voice Listening Status */}
         <motion.div 
            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-           className={`mt-6 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium border ${isListening ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-red-50 border-red-100 text-red-500'}`}
+           className={`mt-2 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium border ${isListening ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-red-50 border-red-100 text-red-500'}`}
         >
            <Mic size={14} className={isListening ? "text-purple-600 animate-pulse" : ""} />
            {isListening ? (
@@ -154,87 +161,60 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      {/* SOS Active Alerts & Animated Police Path */}
+      {/* Continuous Red Alarm SOS Panel */}
       {sosActive && (
         <motion.div 
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="w-full flex flex-col gap-3 mt-2"
+           initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
+           className="w-full mt-4 bg-red-600 rounded-[32px] p-6 text-white text-center shadow-[0_0_50px_rgba(220,38,38,0.5)] flex flex-col items-center z-10"
         >
-          <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3 shadow-sm">
-            <CheckCircle2 size={20} className="text-red-600" />
-            <User size={18} className="text-red-500" />
-            <p className="text-sm font-semibold text-red-800">{t('alert_family')}</p>
-          </motion.div>
-          <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3 shadow-sm">
-            <CheckCircle2 size={20} className="text-red-600" />
-            <HeartPulse size={18} className="text-red-500" />
-            <p className="text-sm font-semibold text-red-800">{t('alert_hospital')}</p>
-          </motion.div>
-          <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1 }} className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3 shadow-sm">
-            <CheckCircle2 size={20} className="text-red-600" />
-            <Building2 size={18} className="text-red-500" />
-            <p className="text-sm font-semibold text-red-800">{t('alert_police')}</p>
-          </motion.div>
-
-          {/* Animated Location Tracking (Police to Women) */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }} 
-            animate={{ opacity: 1, scale: 1 }} 
-            transition={{ delay: 1.5 }}
-            className="mt-4 bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xl"
-          >
-             <div className="bg-slate-900 px-4 py-3 flex items-center justify-between text-white">
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold uppercase tracking-wider text-green-400">{t('police_dispatch')}</span>
-                  <span className="text-xl font-black">{t('dispatch_eta')}</span>
+          <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-4">
+             <AlertOctagon size={32} className="text-white" />
+          </div>
+          <h2 className="text-2xl font-black mb-2 tracking-wide uppercase">Emergency Active</h2>
+          <p className="text-red-100 font-medium mb-6 text-sm">Do not close this app. Help is being notified.</p>
+          
+          {/* Automated Alert Dispatch Simulation */}
+          <div className="w-full space-y-3 mb-6">
+             <motion.div 
+                initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}
+                className="bg-black/20 rounded-2xl p-3 flex items-center gap-3 text-left"
+             >
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-red-600 shrink-0">
+                   <Phone size={14} className="fill-current" />
                 </div>
-                <div className="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center">
-                  <Navigation size={20} className="text-blue-400" />
+                <div>
+                   <p className="text-xs font-bold text-white uppercase tracking-wider">SMS Dispatched</p>
+                   <p className="text-[10px] text-red-200">Location sent to Mom (+91 9876xxxxxx)</p>
                 </div>
-             </div>
-             
-             {/* Map Mock */}
-             <div className="relative h-48 bg-[#f4f7f6] overflow-hidden">
-                <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
-                
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  {/* Route path */}
-                  <motion.path 
-                    d="M 90,90 Q 50,80 30,50 T 10,10" 
-                    fill="none" 
-                    stroke="#3b82f6" 
-                    strokeWidth="3" 
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1.5, delay: 2 }}
-                  />
-                  {/* Woman Location */}
-                  <circle cx="10" cy="10" r="4" fill="#ef4444" />
-                  <circle cx="10" cy="10" r="10" fill="#ef4444" opacity="0.3">
-                    <animate attributeName="r" values="6;16;6" dur="1s" repeatCount="indefinite" />
-                  </circle>
-                  
-                  {/* Police Station Location */}
-                  <circle cx="90" cy="90" r="4" fill="#0f172a" />
-                </svg>
+                <CheckCircle2 size={16} className="text-green-400 ml-auto" />
+             </motion.div>
 
-                {/* Animated Police Marker */}
-                <motion.div 
-                  className="absolute w-4 h-4 bg-blue-500 rounded border-2 border-white shadow-lg z-10 flex items-center justify-center"
-                  initial={{ top: '85%', left: '85%' }}
-                  animate={{ top: '10%', left: '10%' }}
-                  transition={{
-                    duration: 5,
-                    delay: 3,
-                    ease: "easeInOut",
-                    repeat: Infinity
-                  }}
-                >
-                   <div className="w-1 h-1 bg-white rounded-full"></div>
-                </motion.div>
-             </div>
-          </motion.div>
+             <motion.div 
+                initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.5 }}
+                className="bg-black/20 rounded-2xl p-3 flex items-center gap-3 text-left"
+             >
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 shrink-0">
+                   <Shield size={14} className="fill-current" />
+                </div>
+                <div>
+                   <p className="text-xs font-bold text-white uppercase tracking-wider">Police Notified</p>
+                   <p className="text-[10px] text-red-200">Nearest PCR Van dispatched</p>
+                </div>
+                <CheckCircle2 size={16} className="text-green-400 ml-auto" />
+             </motion.div>
+          </div>
+
+          <div className="w-full flex justify-between gap-3">
+            <button 
+              onClick={handleCancelSOS}
+              className="flex-1 bg-black text-white py-3.5 rounded-full font-bold text-sm tracking-wide shadow-lg border-2 border-black/50"
+            >
+              Cancel SOS
+            </button>
+            <button className="flex-1 bg-white text-red-600 py-3.5 rounded-full font-bold shadow-lg text-sm tracking-wide active:scale-95 transition-transform duration-200">
+              Mute Alarm
+            </button>
+          </div>
         </motion.div>
       )}
 

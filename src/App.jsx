@@ -18,6 +18,8 @@ import Login from './pages/Login';
 import DigiLocker from './pages/DigiLocker';
 import GuardiansSetup from './pages/GuardiansSetup';
 import LiveSession from './pages/LiveSession';
+import FeaturesMenu from './pages/FeaturesMenu'; // Added generic features grid import
+import NearbyPolice from './pages/NearbyPolice'; // Added nearby police
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -35,11 +37,13 @@ function AnimatedRoutes() {
         
         <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
+          <Route path="menu" element={<FeaturesMenu />} />
           <Route path="map" element={<SafeRoute />} />
           <Route path="fake-call" element={<FakeCall />} />
           <Route path="evidence" element={<Evidence />} />
           <Route path="timer" element={<Timer />} />
           <Route path="digilocker" element={<DigiLocker />} />
+          <Route path="police" element={<NearbyPolice />} />
         </Route>
         
         <Route path="/guardians" element={<ProtectedRoute><GuardiansSetup /></ProtectedRoute>} />
