@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
+<<<<<<< HEAD
 import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic, ArrowLeft, ChevronDown, ChevronRight, AlertOctagon, Phone, Shield } from 'lucide-react';
+=======
+import { ShieldAlert, MapPin, Building2, Contact, CheckCircle2, HeartPulse, User, Navigation, Mic, ArrowLeft, ChevronDown, ChevronRight } from 'lucide-react';
+>>>>>>> d0427cc29bc46864a19c7092bc0138cad3f785d5
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Dashboard() {
@@ -17,10 +21,13 @@ export default function Dashboard() {
     setSosActive(!sosActive);
   };
 
+<<<<<<< HEAD
   const handleCancelSOS = () => {
     setSosActive(false);
   };
 
+=======
+>>>>>>> d0427cc29bc46864a19c7092bc0138cad3f785d5
   // Voice Interaction Hook
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -29,11 +36,18 @@ export default function Dashboard() {
       return;
     }
 
+<<<<<<< HEAD
     let isComponentMounted = true;
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-IN'; // Better support for both 'help' and 'bachao'
+=======
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+>>>>>>> d0427cc29bc46864a19c7092bc0138cad3f785d5
 
     recognition.onstart = () => setIsListening(true);
     
@@ -44,19 +58,26 @@ export default function Dashboard() {
       }
       
       const transcriptLower = currentTranscript.toLowerCase();
+<<<<<<< HEAD
       // Trigger SOS on keywords
+=======
+>>>>>>> d0427cc29bc46864a19c7092bc0138cad3f785d5
       if (transcriptLower.includes('help help') || transcriptLower.includes('bachao bachao')) {
         setSosActive(true);
         if ("vibrate" in navigator) {
            navigator.vibrate([500, 200, 500, 200, 500]);
         }
+<<<<<<< HEAD
         // Force stop to clear transcript history; it auto-restarts via onend
         recognition.stop();
+=======
+>>>>>>> d0427cc29bc46864a19c7092bc0138cad3f785d5
       }
     };
 
     recognition.onend = () => {
        setIsListening(false);
+<<<<<<< HEAD
        // Auto-restart to maintain continuous listening only if mounted
        if (isComponentMounted) {
          setTimeout(() => {
@@ -67,6 +88,14 @@ export default function Dashboard() {
            }
          }, 1000);
        }
+=======
+       // Auto-restart to maintain continuous listening
+       setTimeout(() => {
+         try {
+           recognition.start();
+         } catch (e) {}
+       }, 1000);
+>>>>>>> d0427cc29bc46864a19c7092bc0138cad3f785d5
     };
 
     try {
@@ -76,7 +105,10 @@ export default function Dashboard() {
     }
 
     return () => {
+<<<<<<< HEAD
       isComponentMounted = false;
+=======
+>>>>>>> d0427cc29bc46864a19c7092bc0138cad3f785d5
       recognition.onend = null; // Prevent restart on unmount
       recognition.stop();
     };

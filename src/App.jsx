@@ -23,8 +23,12 @@ import NearbyPolice from './pages/NearbyPolice'; // Added nearby police
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
+<<<<<<< HEAD
   const location = useLocation();
   if (!isAuthenticated && !location.state?.emergencyOnly) return <Navigate to="/login" replace />;
+=======
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+>>>>>>> d0427cc29bc46864a19c7092bc0138cad3f785d5
   return children;
 }
 
